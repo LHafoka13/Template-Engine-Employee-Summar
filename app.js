@@ -16,12 +16,12 @@ const Employee = require("./lib/Employee");
 // and to create objects for each team member (using the correct classes as blueprints!)
 
 //Array Declaration
-const myTeam = [];
+let myTeam = [];
 
 //Function for grabbing Manager data
 
 function manager() {
-  return inquirer
+inquirer
     .prompt([
       {
         type: 'confirm',
@@ -42,8 +42,19 @@ function manager() {
         type: 'input',
         message: 'What is your manager\'s email address?',
         name: 'managerEmail',
+        validate: function (email) {
+  
+              valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  
+              if (valid) {
+                console.log("Great job");
+                  return true;
+              } else {
+                  console.log(".  Please enter a valid email")
+                  return false;
+              }
         //add validate here
-      },
+      }},
       {
         type: 'input',
         message: 'What is your office number?',
@@ -52,14 +63,16 @@ function manager() {
 
     ])
     .then((answers) => {
-      const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.officeNumber);
+      let manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.officeNumber);
       myTeam.push(manager);
+     
       addEmployee();
+
     })
 };
 
 function addEmployee () {
-  return inquirer
+ inquirer
     .prompt([{
       type: 'list',
       message: 'Choose the next employee to your team.',
@@ -75,13 +88,17 @@ function addEmployee () {
           intern()
           break;
         case 'I do not want to add another employee':
+          renderHTML()
           break;
       }
+       console.log(myTeam)
+      
+
     })
 }
 
 function engineer() {
-  return inquirer
+ inquirer
     .prompt([
     {
       type: 'input',
@@ -96,7 +113,19 @@ function engineer() {
     {
       type: 'input',
       message: 'What is your Engineer\'s email address?',
-      name: 'engineerEmail'
+      name: 'engineerEmail',
+      validate: function (email) {
+  
+        valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  
+          if (valid) {
+            console.log("Great job");
+              return true;
+          } else {
+              console.log(".  Please enter a valid email")
+              return false;
+          }
+          }
     },
     {
       type: 'input',
@@ -105,14 +134,14 @@ function engineer() {
     }
   ])
   .then((answers) => {
-    const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.github);
+    let engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.github);
     myTeam.push(engineer);
     addEmployee();
   })
 }
 
 function intern() {
-  return inquirer
+ inquirer
     .prompt([
     {
       type: 'input',
@@ -127,8 +156,19 @@ function intern() {
     {
       type: 'input',
       message: 'What is your Intern\'s email address?',
-      name: 'internEmail'
-    },
+      name: 'internEmail',
+      validate: function (email) {
+  
+        valid = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+  
+          if (valid) {
+            console.log("Great job");
+              return true;
+           } else {
+              console.log(".  Please enter a valid email")
+              return false;
+          }
+    }},
     {
       type: 'input',
       message: 'Enter the school your Intern attends.',
@@ -136,13 +176,14 @@ function intern() {
     }
   ])
   .then((answers) => {
-    const intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.school);
+    let intern = new Intern(answers.internName, answers.internId, answers.internEmail, answers.school);
     myTeam.push(intern);
     addEmployee();
   })
 }
 
-manager()
+manager();
+
 
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
@@ -150,8 +191,14 @@ manager()
 
 // generate and return a block of HTML including templated divs for each employee!
 
+function renderHTML() {
+  let html = render(myTeam);
 
-render(myTeam);
+  fs.writeFile(outputPath, html, (err) => {
+  if (err) throw err;
+  console.log('The file has been saved!');
+});
+}
 
 
 // After you have your html, you're now ready to create an HTML file using the HTML
